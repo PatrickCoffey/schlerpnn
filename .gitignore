@@ -1,0 +1,7 @@
+# ignore compiled python files and .gz files
+*.pyc
+*.gz
+
+# ignore wingide files
+*.wpr
+*.wpu
