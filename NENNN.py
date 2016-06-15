@@ -230,7 +230,7 @@ class NENNN(object):
                     random = np.random.randint(0, len(x) - 2)
                     print(np.round(last_layer[random + i], 0))
                     print("Actual: ")
-                    print(y[i])
+                    print(y[random + i])
                     
         self.train_loops.append({'loops': train_loops,
                                  'cases': len(y),
