@@ -161,7 +161,8 @@ class NENonlinear(object):
                    'tanh',
                    'softplus')
     
-    def __init__(self, func_type='sigmoid'):
+    def __init__(self, func_type='sigmoid', bias=1):
+        self.bias = bias
         if func_type in self._FUNC_TYPES:
             if func_type == self._FUNC_TYPES[0]:
                 # sigmoid
@@ -189,10 +190,10 @@ class NENonlinear(object):
         if self._FUNCTION == self._FUNC_TYPES[0]:
             # sigmoid
             if derivative:
-                ret = ne.evaluate('x*(1-x)')
+                ret = ne.evaluate('({0}*exp({0}*-x))/(exp({0}*-x)+1)'.format(self.bias))
             else:
                 try:
-                    ret = ne.evaluate('1/(1+exp(-x))')
+                    ret = ne.evaluate('1/(1+exp({0}*(-x)))'.format(self.bias))
                 except RuntimeWarning:
                     ret = 0.0
         elif self._FUNCTION == self._FUNC_TYPES[1]:
@@ -457,7 +458,7 @@ class NENNN(object):
             _in = self._LAYER_DEFS[i]['in']
             _out = self._LAYER_DEFS[i]['out']
             _nonlin = self._LAYER_DEFS[i]['nonlin']
-            self.WEIGHT_DATA[i] = np.random.randn(_in, _out)
+            self.WEIGHT_DATA[i] = (1/np.sqrt(_in)) * np.random.randn(_in, _out)
             self.LAYER_FUNC[i] = _nonlin
     
     def reset(self):
@@ -798,70 +799,125 @@ if __name__ == '__main__':
     #    learning tool!
     
     
-    import mnist
-    try:
-        import cPickle as pickle
-    except:
-        import pickle
+    #import mnist
+    #try:
+        #import cPickle as pickle
+    #except:
+        #import pickle
 
 
-    # get data
-    if input("load mnist training data?").lower() == 'y':
-        load_d = input("  enter filename (eg. 500 = tx-500, ty-500): ")
-        with open("mnist/tx{}".format(load_d), 'rb') as f:
-            x = pickle.load(f)
-        with open("mnist/ty{}".format(load_d), 'rb') as f:
-            y = pickle.load(f)
-    else:
-        print("grabbing data...")
-        t_in, t_out = mnist.get_flat_mnist(items=1000, normalize=True)
-        print("  got nmist array!")
-        print('  {}x{}'.format(len(t_in), len(t_in[0])))
-        x = np.array(t_in, dtype=np.float)
-        y = np.array(t_out, dtype=np.float)        
+    ## get data
+    #load_data = input("load mnist training data?")
+    #if load_data.lower() == 'y':
+        #load_d = input("  enter filename (eg. 500 = tx-500, ty-500): ")
+        #with open("mnist/tx{}".format(load_d), 'rb') as f:
+            #x = pickle.load(f)
+        #with open("mnist/ty{}".format(load_d), 'rb') as f:
+            #y = pickle.load(f)
+    #else:
+        #print("grabbing data...")
+        #t_in, t_out = mnist.get_flat_mnist(items=1000, normalize=True)
+        #print("  got nmist array!")
+        #print('  {}x{}'.format(len(t_in), len(t_in[0])))
+        #x = np.array(t_in, dtype=np.float)
+        #y = np.array(t_out, dtype=np.float)        
     
     
-    load = input("load network? (y/N): ")
-    if load.lower() == 'y':
-        fname = input("network filename: ")
-        with open(fname, 'rb') as f:
-            nnn = pickle.load(f)
-    else:
-        # set hypervariables
-        i_input = 784 # this is how many pixel per image (they are flat)
-        i_out = 10
-        #even shrink
+    #load = input("load network? (y/N): ")
+    #if load.lower() == 'y':
+        #fname = input("network filename: ")
+        #with open(fname, 'rb') as f:
+            #nnn = pickle.load(f)
+    #else:
+        ## set hypervariables
+        #i_input = 784 # this is how many pixel per image (they are flat)
+        #i_out = 10
+        ##even shrink
+        ##weights = ((784, 512, NENonlinear('sigmoid')), 
+                   ##(512, 256, NENonlinear('sigmoid')),
+                   ##(256, 128, NENonlinear('sigmoid')),
+                   ##(128, 64, NENonlinear('sigmoid')),
+                   ##(64, 32, NENonlinear('sigmoid')),
+                   ##(32, 16, NENonlinear('sigmoid')),
+                   ##(16, 10, NENonlinear('sigmoid')))
+    
+        ## less layers
         #weights = ((784, 512, NENonlinear('sigmoid')), 
                    #(512, 256, NENonlinear('sigmoid')),
-                   #(256, 128, NENonlinear('sigmoid')),
-                   #(128, 64, NENonlinear('sigmoid')),
-                   #(64, 32, NENonlinear('sigmoid')),
-                   #(32, 16, NENonlinear('sigmoid')),
+                   #(256, 16, NENonlinear('sigmoid')),
                    #(16, 10, NENonlinear('sigmoid')))
     
-        # less layers
-        weights = ((784, 512, NENonlinear('sigmoid')), 
-                   (512, 256, NENonlinear('sigmoid')),
-                   (256, 16, NENonlinear('sigmoid')),
-                   (16, 10, NENonlinear('sigmoid')))
-    
         
-        # initialise network
-        print("initialising network...")
-        #nn = NeuralNetwork(i_input, i_hidden, i_out, Nonlinear('sigmoid'), False, 0.1)
-        nnn = NENNN(inputs=i_input, 
-                    weights=weights, 
-                    outputs=i_out,
-                    alpha=0.01)
-        print("  network initialised!")
+        ## initialise network
+        #print("initialising network...")
+        ##nn = NeuralNetwork(i_input, i_hidden, i_out, Nonlinear('sigmoid'), False, 0.1)
+        #nnn = NENNN(inputs=i_input, 
+                    #weights=weights, 
+                    #outputs=i_out,
+                    #alpha=0.01)
+        #print("  network initialised!")
     
-    # train networkn
-    loops = 100
-    print("training network for {} loops".format(loops))
+    ## train networkn
+    #loops = 100
+    #print("training network for {} loops".format(loops))
+    #nnn.train(x, y, loops)
+    
+    #save = input("save network? (y/N): ")
+    #if save.lower() == 'y':
+        #fname = input("save network as: ")
+        #with open(fname, 'wb+') as f:
+            #pickle.dump(nnn, f)
+            
+            
+      
+      
+    import mnist    
+      
+    print("grabbing data...")
+    t_in, t_out = mnist.get_flat_mnist(items=1000, normalize=True)
+    print("  got nmist array!")
+    print('  {}x{}'.format(len(t_in), len(t_in[0])))
+    x = np.array(t_in, dtype=np.float)
+    y = np.array(t_out, dtype=np.float)
+    
+    
+    # set hypervariables
+    i_input = 784 # this is how many pixel per image (they are flat)
+    i_out = 10
+    #even shrink
+    #weights = ((784, 512, NENonlinear('sigmoid')), 
+               #(512, 256, NENonlinear('sigmoid')),
+               #(256, 128, NENonlinear('sigmoid')),
+               #(128, 64, NENonlinear('sigmoid')),
+               #(64, 32, NENonlinear('sigmoid')),
+               #(32, 16, NENonlinear('sigmoid')),
+               #(16, 10, NENonlinear('sigmoid')))
+
+    # less layers
+    weights = ((784, 32, NENonlinear('sigmoid', 0.1)), 
+               #(32, 10, NENonlinear('sigmoid', 0.5)),
+               #(32, 16, NENonlinear('sigmoid', 1)),
+               (32, 10, NENonlinear('sigmoid', 0.1)))
+
+    
+    # initialise network
+    print("initialising network...")
+    #nn = NeuralNetwork(i_input, i_hidden, i_out, Nonlinear('sigmoid'), False, 0.1)
+    nnn = NENNN(inputs=i_input, 
+                weights=weights, 
+                outputs=i_out,
+                alpha=1)
+    print("  network initialised!")
+
+
+    # train network
+    loops = 1000
+
+    print("training network for {} loops, with {} alpha".format(loops, nnn._ALPHA))
     nnn.train(x, y, loops)
     
-    save = input("save network? (y/N): ")
-    if save.lower() == 'y':
-        fname = input("save network as: ")
-        with open(fname, 'wb+') as f:
-            pickle.dump(nnn, f)
+    
+    
+    #nnn._ALPHA = 0.01
+    #print("training network for {} loops, with {} alpha".format(loops, nnn._ALPHA))
+    #nnn.train(x, y, loops)

@@ -437,8 +437,8 @@ if __name__ == '__main__':
         import pickle
     
     # get data
-    if input("load mnist training data? (y/N): ").lower() == 'y':
-        load_d = input("  enter filename (eg. 500 = tx-500, ty-500): ")
+    if raw_input("load mnist training data? (y/N): ").lower() == 'y':
+        load_d = raw_input("  enter filename (eg. 500 = tx-500, ty-500): ")
         with open("mnist/tx{}".format(load_d), 'rb') as f:
             x = pickle.load(f)
         with open("mnist/ty{}".format(load_d), 'rb') as f:
@@ -453,10 +453,10 @@ if __name__ == '__main__':
     
     
     # load/init network
-    load = input("load network? (y/N): ")
+    load = raw_input("load network? (y/N): ")
     net_loaded = False
     if load.lower() == 'y':
-        fname = input("network filename: ")
+        fname = raw_input("network filename: ")
         with open('nets/{}'.format(fname), 'rb') as f:
             nnn = pickle.load(f)
             net_loaded = True
@@ -488,22 +488,22 @@ if __name__ == '__main__':
         print("  network initialised!")
     
     if net_loaded:
-        stats = input("print stats about current net? (y/N): ")
+        stats = raw_input("print stats about current net? (y/N): ")
         if stats.lower() == 'y':
             nnn.print_stats()
 
     # train network
-    alpha = input("change alpha ({}): ".format(nnn._ALPHA))
+    alpha = raw_input("change alpha ({}): ".format(nnn._ALPHA))
     if alpha not in (0, "", None):
         nnn.update_alpha(np.float(alpha))
 
-    loops = input("how man training loops? (100): ")
+    loops = raw_input("how man training loops? (100): ")
     if loops in (0, "", None):
         loops = 100
     else:
         loops = int(loops)
         
-    batches = input("process in batches of? (0 = all at once): ")
+    batches = raw_input("process in batches of? (0 = all at once): ")
     if batches in (0, "", None):
         batches = 0
     else:
@@ -531,8 +531,8 @@ if __name__ == '__main__':
 
 
     # save network
-    save = input("save network? (y/N): ")
+    save = raw_input("save network? (y/N): ")
     if save.lower() == 'y':
-        fname = input("save network as: ")
+        fname = raw_input("save network as: ")
         with open('nets/{}'.format(fname), 'wb+') as f:
             pickle.dump(nnn, f)

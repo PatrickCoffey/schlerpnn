@@ -57,7 +57,7 @@ def show(image):
     pyplot.show()
     
     
-def get_flat_mnist(dataset="training", path="./mnist", items=60000, normalize=False):
+def get_flat_mnist(dataset="training", path="./mnist", items=50000, normalize=False):
     images = tuple()
     labels = tuple()
     i = 0
